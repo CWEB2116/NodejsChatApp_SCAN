@@ -19,7 +19,7 @@ pipeline {
                 script {
                     echo 'Building and Tagging Docker Image with Docker Compose...'
                     sh "ls"
-                    sh "docker-compose -f docker-compose.yml build app" 
+                    sh "docker compose -f docker-compose.yml build app" 
                     sh "docker tag nodejschatapp ${DOCKER_IMAGE}:latest"
                     sh "docker tag nodejschatapp ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                 }
