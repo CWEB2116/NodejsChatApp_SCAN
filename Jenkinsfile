@@ -44,7 +44,7 @@ pipeline {
                     sh "docker pull ${DOCKER_IMAGE}:latest"
                     
                     // Start application container using docker-compose
-                    sh "docker-compose -f docker-compose.yml up -d"
+                    sh "docker compose -f docker-compose.yml up -d"
                 }
             }
         }
@@ -53,7 +53,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up Docker resources...'
-            sh "docker-compose -f docker-compose.yml down"
+            sh "docker compose -f docker-compose.yml down"
             sh "docker system prune -f"
         }
     }
