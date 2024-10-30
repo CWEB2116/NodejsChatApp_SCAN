@@ -18,8 +18,8 @@ pipeline {
             steps {
                 script {
                     echo 'Building and Tagging Docker Image with Docker Compose...'
-                    sh "ls"
-                    sh "docker compose -f docker-compose.yml build app" 
+                    sh 'ls'
+                    sh 'docker compose -f docker-compose.yml build app'
                     sh "docker tag nodejschatapp ${DOCKER_IMAGE}:latest"
                     sh "docker tag nodejschatapp ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                 }
@@ -36,18 +36,25 @@ pipeline {
             }
         }
 
+            post {
+            always {
+                echo 'Cleaning up Docker resources...'
+                sh 'docker compose -f docker-compose.yml down'
+                sh 'docker system prune -f'
+            }
+            }
+
         stage('Run Application with Docker Compose') {
             steps {
                 script {
                     echo 'Pulling and Running Docker Image with Docker Compose...'
                     // Pull the latest image
                     sh "docker pull ${DOCKER_IMAGE}:latest"
-                    
+
                     // Start application container using docker-compose
-                    sh "docker compose -f docker-compose.yml up -d"
+                    sh 'docker compose -f docker-compose.yml up -d'
                 }
             }
         }
     }
-
 }
