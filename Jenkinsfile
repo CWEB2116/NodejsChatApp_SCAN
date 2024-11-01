@@ -14,12 +14,24 @@ pipeline {
             }
         }
 
+        stage('Snyk Security Analysis') {
+            steps {
+                echo 'Running Snyk Security Analysis...'
+                snykSecurity(
+                    snykInstallation: 'snyk', // Name you gave in Configure System
+                    includeReport: true,
+                    monitorProjectOnBuild: true,
+                    severity: 'high', // Adjust based on your needs (low, medium, high)
+                    failOnIssues: true // Set to false if you don't want the build to fail on vulnerabilities
+                )
+            }
+        }
+
         stage('Build and Tag Docker Image with Compose') {
             steps {
                 script {
                     echo 'Building and Tagging Docker Image with Docker Compose...'
-                    sh "ls"
-                    sh "docker compose -f docker-compose.yml build app" 
+                    sh "docker compose -f docker-compose.yml build app"
                     sh "docker tag nodejschatapp ${DOCKER_IMAGE}:latest"
                     sh "docker tag nodejschatapp ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                 }
@@ -40,10 +52,7 @@ pipeline {
             steps {
                 script {
                     echo 'Pulling and Running Docker Image with Docker Compose...'
-                    // Pull the latest image
                     sh "docker pull ${DOCKER_IMAGE}:latest"
-                    
-                    // Start application container using docker-compose
                     sh "docker compose -f docker-compose.yml up -d"
                 }
             }
@@ -53,8 +62,9 @@ pipeline {
     post {
         always {
             echo 'Cleaning up Docker resources...'
-            //sh "docker compose -f docker-compose.yml down"
-            //sh "docker system prune -f"
+            // Uncomment the following lines if you want to clean up Docker resources after the build
+            // sh "docker compose -f docker-compose.yml down"
+            // sh "docker system prune -f"
         }
     }
 }
