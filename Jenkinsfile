@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'ameliamae/nodejschatapp'
-        GIT_REPO = 'https://github.com/CWEB2116/NodejsChatApp_SCAN.git'
+        GIT_REPO = 'https://github.com/CWEB2116/NodejsChatApp.git'
     }
 
     stages {
@@ -17,17 +17,54 @@ pipeline {
         stage('Snyk Security Analysis') {
             steps {
                 echo 'Running Snyk Security Analysis...'
+                // Optional: List the contents of the workspace and app directory for verification
+                sh 'echo "Workspace contents:" && ls -la'
+                sh 'echo "App directory contents:" && ls -la app'
                 snykSecurity(
-                    snykInstallation: 'snyk', // Name from Global Tool Configuration
-                    snykTokenId: 'snyk_api', // Credentials ID for the Snyk API token
-                    failOnError: true, // Set to false to avoid build failure on vulnerabilities
+                    snykInstallation: 'snyk',     // Name from Global Tool Configuration
+                    snykTokenId: 'snyk_api',      // Credentials ID for the Snyk API token
+                    projectSubPath: 'app',        // Path to the subdirectory containing package.json
+                    failOnError: true,            // Set to false to avoid build failure on vulnerabilities
                     monitorProjectOnBuild: true,
-                    severity: 'high' // Adjust as needed: low, medium, high, critical
+                    severity: 'high'              // Adjust as needed: low, medium, high, critical
                 )
             }
         }
 
-        // ... rest of your stages remain the same ...
+        stage('Build and Tag Docker Image with Compose') {
+            steps {
+                script {
+                    echo 'Building and Tagging Docker Image with Docker Compose...'
+                    // Navigate to the app directory if necessary
+                    sh 'cd app && docker compose -f ../docker-compose.yml build app' 
+                    sh "docker tag nodejschatapp ${DOCKER_IMAGE}:latest"
+                    sh "docker tag nodejschatapp ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    echo 'Pushing Docker Image to Docker Hub...'
+                    sh "docker push ${DOCKER_IMAGE}:latest"
+                    sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                }
+            }
+        }
+
+        stage('Run Application with Docker Compose') {
+            steps {
+                script {
+                    echo 'Pulling and Running Docker Image with Docker Compose...'
+                    // Pull the latest image
+                    sh "docker pull ${DOCKER_IMAGE}:latest"
+                    
+                    // Start application container using docker-compose
+                    sh "docker compose -f docker-compose.yml up -d"
+                }
+            }
+        }
     }
 
     post {
