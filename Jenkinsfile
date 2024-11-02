@@ -19,7 +19,7 @@ pipeline {
                 echo 'Running Snyk Security Analysis...'
                 snykSecurity(
                     snykInstallation: 'snyk', // Name from Global Tool Configuration
-                    snykTokenId: 'snyk-api', // Credentials ID for the Snyk API token
+                    snykTokenId: 'snyk_api', // Credentials ID for the Snyk API token
                     failOnError: true, // Set to false to avoid build failure on vulnerabilities
                     monitorProjectOnBuild: true,
                     severity: 'high' // Adjust as needed: low, medium, high, critical
