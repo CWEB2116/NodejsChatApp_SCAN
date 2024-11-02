@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'ameliamae/nodejschatapp'
-        GIT_REPO = 'https://github.com/CWEB2116/NodejsChatApp.git'
+        GIT_REPO = 'https://github.com/CWEB2116/NodejsChatApp_SCAN.git'
     }
 
     stages {
@@ -18,11 +18,11 @@ pipeline {
             steps {
                 echo 'Running Snyk Security Analysis...'
                 snykSecurity(
-                    snykInstallation: 'snyk', // Name you gave in Configure System
-                    includeReport: true,
+                    snykInstallation: 'snyk', // Name you gave in Global Tool Configuration
+                    failOnError: true, // Set to false if you don't want the build to fail on vulnerabilities
                     monitorProjectOnBuild: true,
-                    severity: 'high', // Adjust based on your needs (low, medium, high)
-                    failOnIssues: true // Set to false if you don't want the build to fail on vulnerabilities
+                    severity: 'high' // Adjust based on your needs (low, medium, high, critical)
+                    // additionalArguments: '' // Optional: Add any additional arguments here
                 )
             }
         }
