@@ -27,7 +27,7 @@ pipeline {
                         snykTokenId: 'snyk_api',      // Credentials ID for the Snyk API token
                         failOnError: false,            // Set to false to avoid build failure on vulnerabilities
                         monitorProjectOnBuild: true,
-                        severity: 'low'              // Adjust as needed: low, medium, high, critical
+                        severity: 'high'              // Adjust as needed: low, medium, high, critical
                     )
                 }
             }
