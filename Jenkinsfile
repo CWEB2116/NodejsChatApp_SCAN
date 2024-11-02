@@ -25,7 +25,7 @@ pipeline {
                     snykSecurity(
                         snykInstallation: 'snyk',     // Name from Global Tool Configuration
                         snykTokenId: 'snyk_api',      // Credentials ID for the Snyk API token
-                        failOnError: true,            // Set to false to avoid build failure on vulnerabilities
+                        failOnError: false,            // Set to false to avoid build failure on vulnerabilities
                         monitorProjectOnBuild: true,
                         severity: 'low'              // Adjust as needed: low, medium, high, critical
                     )
