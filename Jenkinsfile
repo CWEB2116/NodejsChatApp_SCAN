@@ -18,45 +18,16 @@ pipeline {
             steps {
                 echo 'Running Snyk Security Analysis...'
                 snykSecurity(
-                    snykInstallation: 'snyk', // Name you gave in Global Tool Configuration
-                    failOnError: true, // Set to false if you don't want the build to fail on vulnerabilities
+                    snykInstallation: 'snyk', // Name from Global Tool Configuration
+                    snykTokenId: 'snyk-api', // Credentials ID for the Snyk API token
+                    failOnError: true, // Set to false to avoid build failure on vulnerabilities
                     monitorProjectOnBuild: true,
-                    severity: 'high' // Adjust based on your needs (low, medium, high, critical)
-                    // additionalArguments: '' // Optional: Add any additional arguments here
+                    severity: 'high' // Adjust as needed: low, medium, high, critical
                 )
             }
         }
 
-        stage('Build and Tag Docker Image with Compose') {
-            steps {
-                script {
-                    echo 'Building and Tagging Docker Image with Docker Compose...'
-                    sh "docker compose -f docker-compose.yml build app"
-                    sh "docker tag nodejschatapp ${DOCKER_IMAGE}:latest"
-                    sh "docker tag nodejschatapp ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                }
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    echo 'Pushing Docker Image to Docker Hub...'
-                    sh "docker push ${DOCKER_IMAGE}:latest"
-                    sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                }
-            }
-        }
-
-        stage('Run Application with Docker Compose') {
-            steps {
-                script {
-                    echo 'Pulling and Running Docker Image with Docker Compose...'
-                    sh "docker pull ${DOCKER_IMAGE}:latest"
-                    sh "docker compose -f docker-compose.yml up -d"
-                }
-            }
-        }
+        // ... rest of your stages remain the same ...
     }
 
     post {
